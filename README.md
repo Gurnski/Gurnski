@@ -2,12 +2,12 @@
 
 Computer science student and developer based in Cornwall, UK.
 
-I build web products, put them in front of real users, and fix what breaks. Most of my work sits around TypeScript, React, Node.js, PostgreSQL and applied AI.
+I build products, ship them, and deal with what breaks in production. My main stack is TypeScript, React, Node.js and PostgreSQL, with applied AI where it solves a real problem.
 
-### Current work
+## Selected work
 
-* [WorthScout](https://worthscout.co.uk) helps resellers research products, estimate resale value, manage inventory and prepare listings.
-* **Regen Radar** placed second at the Treefera LCAW 2026 Hackathon. It compared regenerative agriculture signals against control fields without pretending correlation was proof.
-* I also build smaller tools around marketplaces, automotive businesses, data dashboards and games.
+- [WorthScout](https://worthscout.co.uk) is a production SaaS for resellers. It covers product research, resale estimates, inventory, listing preparation and subscription billing.
+- [Regen Radar](https://github.com/Gurnski/Treefera-Hackathon) placed second at the Treefera LCAW 2026 Hackathon. It compared satellite signals from a target field with nearby controls and kept the limits of the evidence explicit.
+- [BSGO Private Server](https://github.com/Gurnski/BSGO-Private-Server) rebuilds missing game data and extends an open-source server with generators, validation, persistence fixes and new gameplay systems.
 
-I care more about shipping useful software than building another tutorial project.
+I am most interested in product engineering, applied AI and software that has to survive contact with real users.
