@@ -1,9 +1,9 @@
-// Generates every image in assets/: the banner, one card per project and the
-// languages card, each in a light and a dark variant.
+// Generates every image in assets/: the banner, the About card, the Projects
+// and achievements card and the Languages card, each in a light and a dark variant.
 //
 // Text is converted to outlines so the cards render the same on every machine:
 // GitHub serves README images through its proxy, so no web font could load anyway.
-// Links cannot live inside an image, so README.md wraps each project card in <a>.
+// Links cannot live inside an image, so README.md wraps the projects card in one <a>.
 //
 // To regenerate after changing the words in `copy` below:
 //   npm i opentype.js@1.3.4
@@ -47,35 +47,53 @@ const copy = {
   banner: {
     kicker: 'SOFTWARE DEVELOPER  ·  CORNWALL, UK',
     name: 'Daniel Rea',
-    bio: 'Computer science student and developer. I build products, ship them, and deal with what breaks in production, with applied AI where it solves a real problem.',
+    bio: 'I build products, ship them, and deal with what breaks in production.',
     stack: 'TypeScript  ·  Python  ·  C#  ·  Java  ·  React  ·  Node.js  ·  PostgreSQL',
   },
-  projects: [
-    {
-      slug: 'worthscout',
-      kicker: '01  ·  SAAS, IN PRODUCTION',
-      link: 'worthscout.co.uk',
-      title: 'WorthScout',
-      body: 'Photograph an item and get a structured resale assessment, check it against live market data, move it into inventory, prepare the listing, and pay by subscription. The source is private; the worthscout-public repo shows how it fits together.',
-      stack: 'React  ·  TypeScript  ·  Fastify  ·  PostgreSQL  ·  Prisma  ·  Stripe',
-    },
-    {
-      slug: 'regen-radar',
-      kicker: '02  ·  HACKATHON, SECOND PLACE',
-      link: 'github.com/Gurnski/Treefera-Hackathon',
-      title: 'Regen Radar',
-      body: "Built at Treefera's hackathon during London Climate Action Week 2026. Tests whether a change in farming practice shows up in Sentinel-2 satellite data by comparing a field with nearby controls. The answer came back as a score with a confidence attached rather than a verdict, because the controls improved too.",
-      stack: 'Python  ·  Jupyter  ·  React  ·  TypeScript  ·  Recharts',
-    },
-    {
-      slug: 'bsgo',
-      kicker: '03  ·  GAME SERVER, OPEN SOURCE',
-      link: 'github.com/Gurnski/BSGO-Private-Server',
-      title: 'BSGO Private Server',
-      body: "Battlestar Galactica Online closed in 2019 and its game data was never published. This rebuilds it: a generator that emits 12,250 cards across 58 star systems and checks each one against the server's own source, on top of the open-source BSGOCore server with persistence, protocol and combat fixes. Playable end to end with the original client.",
-      stack: 'Java  ·  JavaScript  ·  Python',
-    },
-  ],
+  about: {
+    kicker: 'ABOUT',
+    datum: 'On GitHub since December 2017',
+    paragraphs: [
+      'Computer science student. My first repos here were C# and C++ tools; the recent ones are TypeScript and Python, and one of them is a subscription product in production. AI goes in where it earns its place and stays out where it does not.',
+      'Most interested in product engineering, applied AI and software that has to survive contact with real users.',
+    ],
+  },
+  projects: {
+    kicker: 'PROJECTS AND ACHIEVEMENTS',
+    items: [
+      {
+        title: 'WorthScout',
+        icon: 'tag',
+        badge: 'IN PRODUCTION',
+        oneLiner: 'SaaS for resellers: photograph an item, get a resale assessment against live market data, then list it.',
+        metaLeft: 'React  ·  TypeScript  ·  Fastify  ·  PostgreSQL  ·  Stripe',
+        metaRight: 'worthscout.co.uk',
+      },
+      {
+        title: 'Regen Radar',
+        icon: 'trophy',
+        accent: true,
+        badge: '2ND PLACE  ·  TREEFERA HACKATHON',
+        oneLiner: 'Tests a farming change against Sentinel-2 satellite data and control fields. Signal, not proof.',
+        metaLeft: 'London Climate Action Week 2026  ·  Python  ·  Jupyter  ·  React  ·  Recharts',
+        metaRight: 'Gurnski/Treefera-Hackathon',
+      },
+      {
+        title: 'BSGO Private Server',
+        icon: 'server',
+        oneLiner: 'Battlestar Galactica Online closed in 2019. Rebuilt on BSGOCore, playable with the original client.',
+        metaLeft: '12,250 cards  ·  58 star systems  ·  Java  ·  JavaScript  ·  Python',
+        metaRight: 'Gurnski/BSGO-Private-Server',
+      },
+      {
+        title: 'ADRM Engine',
+        icon: 'flask',
+        oneLiner: 'Backtester for rule-based forex strategies, with an early MetaTrader 5 integration.',
+        metaLeft: 'Python  ·  research, not a product',
+        metaRight: 'Gurnski/ADRM-Engine',
+      },
+    ],
+  },
   toolbox: {
     kicker: 'LANGUAGES AND TOOLS',
     rows: [
@@ -84,7 +102,6 @@ const copy = {
       ['Back end', 'Node.js  ·  Fastify  ·  PostgreSQL  ·  Prisma  ·  Stripe'],
       ['Testing, ops', 'Playwright  ·  Vitest  ·  Cloudflare  ·  Nginx  ·  Sentry'],
     ],
-    closing: 'Most interested in product engineering, applied AI and software that has to survive contact with real users.',
   },
 };
 
@@ -93,6 +110,7 @@ const copy = {
 const KERN = { kerning: true };
 const width = (font, str, size, opts = {}) => font.getAdvanceWidth(str, size, { ...KERN, ...opts });
 const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+const plain = (s) => s.replace(/\s+·\s+/g, ', ');
 
 // Each glyph's outline is written once per file, in font units, and placed with
 // <use>. A paragraph as raw paths costs about 200 KB; this way it costs about 60.
@@ -136,18 +154,51 @@ const style = {
   kicker: { font: F.monoMed, size: 14, opts: { tracking: 140 } },
   link: { font: F.mono, size: 14, opts: { tracking: 20 } },
   stack: { font: F.mono, size: 14, opts: { tracking: 20 } },
+  badge: { font: F.monoMed, size: 14, opts: { tracking: 120 } },
   label: { font: F.monoMed, size: 13, opts: { tracking: 120 } },
   body: { font: F.reg, size: 22, lineHeight: 32 },
 };
 
+// ---- icons --------------------------------------------------------------
+
+// Stroke icons on a 24-unit grid, drawn by hand so they match each other.
+// `dots` are small filled circles as "cx,cy,r;cx,cy,r".
+const ICONS = {
+  trophy: { d: 'M7 3h10v6.5a5 5 0 0 1-10 0V3z M7 5H5a2 2 0 0 0 0 4h2 M17 5h2a2 2 0 0 1 0 4h-2 M12 14.5V18 M10 21v-3h4v3 M8 21h8' },
+  tag: { d: 'M12 3H3v9l8.6 8.6a2 2 0 0 0 2.8 0l6.2-6.2a2 2 0 0 0 0-2.8L12 3z', dots: '7.5,7.5,1.25' },
+  server: { d: 'M4 5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z M4 15a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1z', dots: '7.5,7,1.1;7.5,17,1.1' },
+  flask: { d: 'M9.5 3h5 M10 3v5.5L4.8 18.5A1.5 1.5 0 0 0 6.1 21h11.8a1.5 1.5 0 0 0 1.3-2.5L14 8.5V3 M7.2 15h9.6' },
+};
+
+// Places an icon with its top-left corner at (x, y), `size` units square.
+// pathLength="100" lets one CSS rule draw every icon in, whatever its real length.
+function icon(name, x, y, size, color, className = '') {
+  const ic = ICONS[name];
+  if (!ic) throw new Error(`no icon named ${name}`);
+  const s = +(size / 24).toFixed(4);
+  const dots = (ic.dots || '').split(';').filter(Boolean).map((t) => {
+    const [cx, cy, r] = t.split(',');
+    return `<circle class="dot" cx="${cx}" cy="${cy}" r="${r}" fill="${color}" stroke="none"/>`;
+  }).join('');
+  return `<g${className ? ` class="${className}"` : ''} transform="translate(${x} ${y}) scale(${s})" fill="none" stroke="${color}" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="${ic.d}" pathLength="100"/>${dots}</g>`;
+}
+
 // ---- card frame ---------------------------------------------------------
+
+// Only the animated classes are listed: a blanket rule would also lift the
+// sparkline's soft end ring and the dot grid to full opacity.
+const REDUCED_MOTION = `
+    @media (prefers-reduced-motion: reduce) {
+      .rule, .spark, .ic path { animation: none; stroke-dashoffset: 0; }
+      .end, .ic .dot, .badge { animation: none; opacity: 1; }
+    }`;
 
 function frame({ H, c, title, desc, defs = '', css = '', under = '', body }) {
   const glyphs = [...glyphDefs].map(([id, d]) => `<path id="${id}" d="${d}"/>`).join('\n    ');
   glyphDefs = new Map(); // the next card starts its own table
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-labelledby="t d">
   <title id="t">${esc(title)}</title>
-  <desc id="d">${esc(desc)}</desc>${css ? `\n  <style>${css}</style>` : ''}
+  <desc id="d">${esc(desc)}</desc>${css ? `\n  <style>${css}${REDUCED_MOTION}\n  </style>` : ''}
   <defs>
     <clipPath id="card"><rect x="0" y="0" width="${W}" height="${H}" rx="${R}"/></clipPath>${defs}
     ${glyphs}
@@ -161,8 +212,8 @@ ${body}
 `;
 }
 
-function rule(c, y) {
-  return `  <line x1="${PAD}" y1="${y}" x2="${W - PAD}" y2="${y}" stroke="${c.border}" stroke-width="1"/>`;
+function rule(c, y, x1 = PAD, x2 = W - PAD) {
+  return `  <line x1="${x1}" y1="${y}" x2="${x2}" y2="${y}" stroke="${c.border}" stroke-width="1"/>`;
 }
 
 // ---- the banner ---------------------------------------------------------
@@ -195,12 +246,7 @@ function banner(c) {
     .spark { stroke-dasharray: ${sparkLen}; stroke-dashoffset: ${sparkLen}; animation: draw 1.6s cubic-bezier(0.3, 0.6, 0.2, 1) 0.3s forwards; }
     .end { opacity: 0; animation: fade 0.4s ease-out 1.75s forwards; }
     @keyframes draw { to { stroke-dashoffset: 0; } }
-    @keyframes fade { to { opacity: 1; } }
-    @media (prefers-reduced-motion: reduce) {
-      .rule, .spark { animation: none; stroke-dashoffset: 0; }
-      .end { animation: none; opacity: 1; }
-    }
-  `;
+    @keyframes fade { to { opacity: 1; } }`;
   const defs = `
     <pattern id="dots" width="24" height="24" patternUnits="userSpaceOnUse">
       <circle cx="12" cy="12" r="1.4" fill="${c.dots}" opacity="${c.dotsOpacity}"/>
@@ -228,36 +274,89 @@ function banner(c) {
   return frame({
     H, c, css, defs, under, body,
     title: b.name,
-    desc: `${b.kicker.replace(/\s+·\s+/g, ', ')}. ${b.bio} ${b.stack.replace(/\s+·\s+/g, ', ')}.`,
+    desc: `${plain(b.kicker)}. ${b.bio} ${plain(b.stack)}.`,
   });
 }
 
-// ---- a project card -----------------------------------------------------
+// ---- the About card -----------------------------------------------------
 
-function project(c, p) {
-  const link = `${p.link} →`;
-  fits(`${p.slug} stack`, style.stack.font, p.stack, style.stack.size, style.stack.opts);
-  fits(`${p.slug} kicker`, style.kicker.font, p.kicker, style.kicker.size, style.kicker.opts, INNER - width(style.link.font, link, style.link.size, style.link.opts) - 40);
-  const lines = wrap(style.body.font, p.body, style.body.size, INNER);
+// A kicker, one grey datum and prose on a shorter measure. Nothing moves:
+// the page's motion budget is the sparkline and the project icons.
+function about(c) {
+  const a = copy.about;
+  const MEASURE = 840;
+  const KICKER_Y = 66, BODY_Y = 118, GAP = 14;
+  fits('about datum', style.link.font, a.datum, style.link.size, style.link.opts, INNER - width(style.kicker.font, a.kicker, style.kicker.size, style.kicker.opts) - 40);
 
-  const KICKER_Y = 66, TITLE_Y = 118, BODY_Y = 166;
-  const RULE_Y = BODY_Y + (lines.length - 1) * style.body.lineHeight + 30;
-  const STACK_Y = RULE_Y + 31;
-  const H = STACK_Y + 36;
+  const lines = [];
+  let y = BODY_Y;
+  for (const p of a.paragraphs) {
+    for (const line of wrap(style.body.font, p, style.body.size, MEASURE)) {
+      lines.push('  ' + text(style.body.font, line, PAD, y, style.body.size, c.body));
+      y += style.body.lineHeight;
+    }
+    y += GAP;
+  }
+  const lastBaseline = y - GAP - style.body.lineHeight;
+  const H = lastBaseline + 48;
+
+  const body = [
+    '  ' + text(style.kicker.font, a.kicker, PAD, KICKER_Y, style.kicker.size, c.accent, style.kicker.opts),
+    '  ' + textRight(style.link.font, a.datum, W - PAD, KICKER_Y, style.link.size, c.secondary, style.link.opts),
+    ...lines,
+  ].join('\n');
+
+  return frame({ H, c, body, title: 'About', desc: `${a.datum}. ${a.paragraphs.join(' ')}` });
+}
+
+// ---- the Projects and achievements card ---------------------------------
+
+// Four rows on a spine of icons. The trophy is the only icon in the accent,
+// and the two badges are the only accent text, so the eye lands on the two
+// facts a reader checks: in production, second place.
+function projects(c) {
+  const p = copy.projects;
+  const TEXT_X = 120, TEXT_W = W - PAD - TEXT_X;
+  const KICKER_Y = 66, ROW0_Y = 130, PITCH = 130;
+  const delays = [0.15, 0.3, 0.45, 0.6];
+
+  const rows = p.items.map((it, i) => {
+    const yT = ROW0_Y + i * PITCH;
+    const badgeW = it.badge ? width(style.badge.font, it.badge, style.badge.size, style.badge.opts) + 40 : 0;
+    fits(`${it.title} title`, F.semi, it.title, 30, {}, TEXT_W - badgeW);
+    fits(`${it.title} one-liner`, style.body.font, it.oneLiner, style.body.size, {}, TEXT_W);
+    fits(`${it.title} meta`, style.stack.font, it.metaLeft, style.stack.size, style.stack.opts, TEXT_W - width(style.stack.font, it.metaRight, style.stack.size, style.stack.opts) - 40);
+    const colour = it.accent ? c.accent : c.secondary;
+    return [
+      '  ' + icon(it.icon, PAD, yT - 24, 28, colour, `ic r${i}`),
+      '  ' + text(F.semi, it.title, TEXT_X, yT, 30, c.primary),
+      it.badge ? `  <g class="badge">${textRight(style.badge.font, it.badge, W - PAD, yT - 1, style.badge.size, c.accent, style.badge.opts)}</g>` : '',
+      '  ' + text(style.body.font, it.oneLiner, TEXT_X, yT + 36, style.body.size, c.body),
+      '  ' + text(style.stack.font, it.metaLeft, TEXT_X, yT + 66, style.stack.size, c.secondary, style.stack.opts),
+      '  ' + textRight(style.stack.font, it.metaRight, W - PAD, yT + 66, style.stack.size, c.secondary, style.stack.opts),
+      i < p.items.length - 1 ? rule(c, yT + 91, TEXT_X) : '',
+    ].filter(Boolean).join('\n');
+  });
+  const H = ROW0_Y + (p.items.length - 1) * PITCH + 66 + 44;
+
+  const css = `
+    .ic path { stroke-dasharray: 100; stroke-dashoffset: 100; animation: draw 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) forwards; }
+    .ic .dot { opacity: 0; animation: fade 0.3s ease-out forwards; }
+    ${delays.map((d, i) => `.r${i} path { animation-delay: ${d}s; } .r${i} .dot { animation-delay: ${(d + 0.5).toFixed(2)}s; }`).join('\n    ')}
+    .badge { opacity: 0; animation: fade 0.4s ease-out 0.95s forwards; }
+    @keyframes draw { to { stroke-dashoffset: 0; } }
+    @keyframes fade { to { opacity: 1; } }`;
 
   const body = [
     '  ' + text(style.kicker.font, p.kicker, PAD, KICKER_Y, style.kicker.size, c.accent, style.kicker.opts),
-    '  ' + textRight(style.link.font, link, W - PAD, KICKER_Y, style.link.size, c.secondary, style.link.opts),
-    '  ' + text(F.semi, p.title, PAD - 2, TITLE_Y, 36, c.primary),
-    ...lines.map((line, i) => '  ' + text(style.body.font, line, PAD, BODY_Y + i * style.body.lineHeight, style.body.size, c.body)),
-    rule(c, RULE_Y),
-    '  ' + text(style.stack.font, p.stack, PAD, STACK_Y, style.stack.size, c.secondary, style.stack.opts),
+    ...rows,
   ].join('\n');
 
-  return frame({ H, c, body, title: p.title, desc: `${p.kicker.replace(/^\d+\s+·\s+/, '')}. ${p.body} ${p.stack.replace(/\s+·\s+/g, ', ')}. ${p.link}` });
+  const desc = p.items.map((it) => `${it.title}${it.badge ? ` (${plain(it.badge).toLowerCase()})` : ''}: ${it.oneLiner} ${plain(it.metaLeft)}. ${it.metaRight}.`).join(' ');
+  return frame({ H, c, css, body, title: 'Projects and achievements', desc });
 }
 
-// ---- the languages card -------------------------------------------------
+// ---- the Languages card -------------------------------------------------
 
 function toolbox(c) {
   const t = copy.toolbox;
@@ -266,12 +365,9 @@ function toolbox(c) {
     fits(`toolbox label ${label}`, style.label.font, label.toUpperCase(), style.label.size, style.label.opts, VALUE_X - LABEL_X - 24);
     fits(`toolbox row ${label}`, style.body.font, value, style.body.size, {}, W - PAD - VALUE_X);
   }
-  const closing = wrap(style.body.font, t.closing, style.body.size, INNER);
 
   const KICKER_Y = 66, ROW_Y = 122, ROW_LH = 42;
-  const RULE_Y = ROW_Y + (t.rows.length - 1) * ROW_LH + 36;
-  const CLOSE_Y = RULE_Y + 44;
-  const H = CLOSE_Y + (closing.length - 1) * style.body.lineHeight + 40;
+  const H = ROW_Y + (t.rows.length - 1) * ROW_LH + 46;
 
   const body = [
     '  ' + text(style.kicker.font, t.kicker, PAD, KICKER_Y, style.kicker.size, c.accent, style.kicker.opts),
@@ -279,14 +375,12 @@ function toolbox(c) {
       '  ' + text(style.label.font, label.toUpperCase(), LABEL_X, ROW_Y + i * ROW_LH - 1, style.label.size, c.secondary, style.label.opts),
       '  ' + text(style.body.font, value, VALUE_X, ROW_Y + i * ROW_LH, style.body.size, c.primary),
     ]),
-    rule(c, RULE_Y),
-    ...closing.map((line, i) => '  ' + text(style.body.font, line, PAD, CLOSE_Y + i * style.body.lineHeight, style.body.size, c.body)),
   ].join('\n');
 
   return frame({
     H, c, body,
     title: 'Languages and tools',
-    desc: `${t.rows.map(([l, v]) => `${l}: ${v.replace(/\s+·\s+/g, ', ')}`).join('. ')}. ${t.closing}`,
+    desc: t.rows.map(([l, v]) => `${l}: ${plain(v)}`).join('. ') + '.',
   });
 }
 
@@ -295,12 +389,13 @@ function toolbox(c) {
 function write(name, svg) {
   const file = path.join(OUT, `${name}.svg`);
   fs.writeFileSync(file, svg);
-  console.log(`${name.padEnd(24)} ${(fs.statSync(file).size / 1024).toFixed(0).padStart(4)} KB`);
+  console.log(`${name.padEnd(18)} ${(fs.statSync(file).size / 1024).toFixed(0).padStart(4)} KB`);
 }
 
 for (const [name, c] of Object.entries(themes)) {
   write(`banner-${name}`, banner(c));
-  for (const p of copy.projects) write(`project-${p.slug}-${name}`, project(c, p));
+  write(`about-${name}`, about(c));
+  write(`projects-${name}`, projects(c));
   write(`toolbox-${name}`, toolbox(c));
 }
 
