@@ -1,6 +1,6 @@
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Gurnski/Gurnski/main/assets/banner-dark.svg">
-  <img alt="Daniel Rea. Software developer, Cornwall, UK. I build products, ship them, and deal with what breaks in production. TypeScript, Python, C#, Java, React, Node.js, PostgreSQL." src="https://raw.githubusercontent.com/Gurnski/Gurnski/main/assets/banner-light.svg" width="100%">
+  <img alt="Daniel Rea. Software developer, Cornwall, UK. I build products: TypeScript, Python, C#, Java, React, Node.js, PostgreSQL." src="https://raw.githubusercontent.com/Gurnski/Gurnski/main/assets/banner-light.svg" width="100%">
 </picture>
 
 <!--<picture>
