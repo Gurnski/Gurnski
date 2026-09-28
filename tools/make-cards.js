@@ -47,7 +47,7 @@ const copy = {
   banner: {
     kicker: 'SOFTWARE DEVELOPER  ·  CORNWALL, UK',
     name: 'Daniel Rea',
-    bio: 'I build products, ship them, and deal with what breaks in production.',
+    bio: 'I build products.',
     stack: 'TypeScript  ·  Python  ·  C#  ·  Java  ·  React  ·  Node.js  ·  PostgreSQL',
   },
   about: {
